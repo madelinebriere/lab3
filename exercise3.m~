@@ -1,3 +1,0 @@
-[x,Fs] = audioread('singing44.wav');
-output = phaseVocoderFile(x', 1024, 512, 1/2);
-audiowrite(output, Fs
