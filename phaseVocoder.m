@@ -1,6 +1,6 @@
-function output = phaseVocoder(x,N,M,a)
+function output = phaseVocoder(x,Fs,N,M,a)
 %% Step A
-[E, P] = stft_analysis(x,N,M);
+[E, P] = stft_analysis(x,Fs,N,M);
 
 %% Step B
 mmax = size(E, 2);

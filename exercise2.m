@@ -1,8 +1,8 @@
 clear
 [notwhisper,Fs] = audioread('notawhisper.wav');
-[whisper,Fs] = audioread('whisper.wav');
+[whisper,~] = audioread('whisper.wav');
 
-[E,P] = stft_analysis(notwhisper', 512, 256);
+[E,P] = stft_analysis(notwhisper', Fs, 512, 256);
 P = 2*pi*rand(size(P));
 x = stft_synthesis(E,P,512,256);
 
