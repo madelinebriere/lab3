@@ -1,0 +1,87 @@
+function output = phaseVocoder(x,N,M,a)
+%% Step A
+[E, P] = stft_analysis(x,N,M);
+
+%% Step B
+mmax = size(E, 2);
+Lmax = (floor((mmax-2)/a) - ceil(1/a)-1);
+l = 1:Lmax;
+t = 1+a*(l-1);
+E1(:,l) = (ceil(t)-t).*E(:,floor(t)) + (1-ceil(t) + t).*E(:,ceil(t));
+
+%% Step C
+kmax = size(P, 1);
+k = (1:kmax)'; 
+D = mod((diff(P,1,2) - 2*pi*k*M/N), 2*pi);
+
+%% Step D
+D1 = (ceil(t2+1/2) - t2 -2).*D(:,floor(t2+1/2)) + (1-ceil(t2+1/2)+t2+1/2).*D(:,ceil(t2+1/2));
+
+P1 = zeros(rows,length(t2));
+
+P1(:,1) = P(:,1);
+
+% The line below was already defined above
+
+for i=2:length(t2)
+
+    P1(:,i) = P1(:,i-1) + D1(:,i) + 2.*pi.*k.*M./N;
+
+end
+
+% ------------------------------------
+
+% e) reconstruct an estimate of the signal, adding back the part with
+
+% conjugate symmetry
+
+i = sqrt(-1); % I think I overwrote this. So just to make sure...
+
+Xm_hat = sqrt(E1).*exp(1i*P1);
+
+hXwf = [Xm_hat; flipud(Xm_hat)];
+
+%hXwf = [Xwf; flipud(Xwf)];
+
+hXwfi = real(ifft(hXwf));
+
+ 
+
+% combine the different oservations of x[n] together to form the
+
+% signal reconstruction
+
+[~, cols] = size(hXwfi);
+
+m_max = cols; % = length(hXwfi)
+
+x_hat = zeros(1,m_max*M+N-M);
+
+[~, m_max] = size(hXwfi);
+
+ 
+
+nn = 0:N-1;
+
+w = sqrt(2*M/N)*sin((pi/N)*(nn+1/2));
+
+for n = 1:N
+
+    for m = 0:m_max %cols/M = m_max
+
+        if ((m+1) > m_max)
+
+            break
+
+        end
+
+        x_hat(n+m*M) = x_hat(n+m*M) + w(n).*hXwfi(n,m+1);
+
+    end
+
+end
+
+% x_hat is now the recostructed signal
+output = stft_synthesis(E1, P1, N,M);
+end
+

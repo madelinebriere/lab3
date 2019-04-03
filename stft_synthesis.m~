@@ -1,0 +1,17 @@
+function output = stft_synthesis(E, P, N, M)
+%% Step A
+k = 1:ceil(N/2);
+Xm(k, :) = sqrt(E(k, :)).*exp(j.*P(k, :));
+hXwf = [Xm; flipud(Xm)];
+
+%% Step B
+hXwfi = real(ifft(hXwf));
+
+%% Step C
+mmax = size(E, 2);
+output = zeros(1, mmax.*M + (N-m));
+for i = 1:mmax+1
+   
+end
+
+end
